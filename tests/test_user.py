@@ -3,9 +3,9 @@ import bcrypt
 
 # Test para crear un usuario a través del modelo
 def test_insert_user(db):
-    email = "test@example.com"
-    name = "Test User"
-    password = "testpassword"
+    email = "regis@example.com"
+    name = "Regis Gambit"
+    password = "K0w7Ow cl34v3"
 
     result = User.insert_user(session=db, email=email, name=name, password=password)
 
@@ -13,11 +13,11 @@ def test_insert_user(db):
     assert result['name'] == name
     assert result['password'] != password
 
-# Prueba para obtener un usuario por ID
+# Test para obtener un usuario por ID
 def test_get_user(db):
-    email = "test2@example.com"
-    name = "Another User"
-    password = "testpassword"
+    email = "gossipium@example.com"
+    name = "Gossipium Hirsutum"
+    password = "741lWiND"
 
     user_schema = User.insert_user(session=db, email=email, name=name, password=password)
 
@@ -27,9 +27,9 @@ def test_get_user(db):
     assert user.name == name
 
 def test_get_user_by_email_and_password(db):
-    email = "login_test@example.com"
-    name = "Login User"
-    password = "securepassword"
+    email = "carcharocles@example.com"
+    name = "Carcharocles Megalodon"
+    password = "Dr460n Ru5h"
 
     User.insert_user(session=db, email=email, name=name, password=password)
 
@@ -44,6 +44,7 @@ def test_signup_route(client, db):
         "name": "Felis Catus",
         "password": "Fl0R4L 7r1cK"
     }
+
 
     response = client.post("/user/signup", json=user_data)
     assert response.status_code == 200
