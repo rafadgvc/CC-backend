@@ -4,18 +4,18 @@ import bcrypt
 # Test de prueba, para ver que el CI funciona
 def test_working_file():
     assert 1 == 1
-#
-# # Test para crear un usuario a través del modelo
-# def test_insert_user(db):
-#     email = "regis@example.com"
-#     name = "Regis Gambit"
-#     password = "K0w7Ow cl34v3"
-#
-#     result = User.insert_user(session=db, email=email, name=name, password=password)
-#
-#     assert result['email'] == email
-#     assert result['name'] == name
-#     assert result['password'] != password
+
+# Test para crear un usuario a través del modelo
+def test_insert_user(db):
+    email = "regis@example.com"
+    name = "Regis Gambit"
+    password = "K0w7Ow cl34v3"
+
+    result = User.insert_user(session=db, email=email, name=name, password=password)
+
+    assert result['email'] == email
+    assert result['name'] == name
+    assert result['password'] != password
 #
 # # Test para obtener un usuario por ID
 # def test_get_user(db):
