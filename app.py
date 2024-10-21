@@ -5,7 +5,6 @@ from flask import Flask
 from flask_jwt_extended import JWTManager
 from flask_smorest import Api
 
-from db.versions.db import create_db
 from services.user_service import blp as user_blp
 from services.exam_service import blp as exam_blp
 from services.question_service import blp as question_blp
