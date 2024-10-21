@@ -7,7 +7,7 @@ from models.user.user_schema import UserRestrictedSchema, UserLoginSchema, UserS
 from flask import jsonify
 from flask_jwt_extended import create_access_token, jwt_required, set_access_cookies, unset_jwt_cookies
 import bcrypt
-from app import session
+from db import session
 
 
 blp = Blueprint("User", __name__, url_prefix="/user")

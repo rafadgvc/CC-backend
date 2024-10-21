@@ -30,13 +30,6 @@ app.config["JWT_COOKIE_CSRF_PROTECT"] = False
 app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=24)
 jwt = JWTManager(app)
 
-if os.getenv('FLASK_ENV') == 'testing':
-    app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///:memory:"
-else:
-    app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql://root:1a2b3c4d5e!$@localhost:5432/postgres"
-
-Session = create_db(app.config["SQLALCHEMY_DATABASE_URI"])
-session = Session()
 
 @app.after_request
 def add_cors_headers(response):

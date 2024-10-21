@@ -6,24 +6,17 @@ import os
 
 
 
-
-url_object = URL.create(
-    "postgresql",
-    username="root",
-    password="1a2b3c4d5e!$",  # plain (unescaped) text
-    host="localhost",
-    database="postgres",
-    port="5432"
-)
-
-
 Base = declarative_base()
 
-def create_db(database_url=None):
-    if not database_url:
-        database_url = os.getenv("DATABASE_URL", "postgresql://root:1a2b3c4d5e!$@localhost:5432/postgres")
+def create_session():
+    # Escoge la base de datos según el entorno
+    if os.getenv('FLASK_ENV') == 'testing':
+        engine = create_engine('sqlite:///:memory:')
+    else:
+        engine = create_engine('postgresql://root:1a2b3c4d5e!$@localhost:5432/postgres')
 
-    engine = create_engine(url_object)
-    Base.metadata.create_all(engine)
-    return sessionmaker(bind=engine)
+    Session = sessionmaker(bind=engine)
+    return Session()
 
+# Inicializa la sesión de la base de datos
+session = create_session()
