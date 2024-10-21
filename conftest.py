@@ -3,9 +3,8 @@ from flask import Flask
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, clear_mappers
 from models.user.user import User
-from db.versions.db import Base
 from app import app as flask_app
-from db.versions.db import create_db
+from db.versions.db import Base, create_session
 import os
 
 # Fixture para la aplicación Flask
@@ -30,20 +29,15 @@ def client(app):
 # Fixture para la base de datos y la sesión
 @pytest.fixture
 def db(app):
-    Session = create_db("sqlite:///:memory:")
+    session = create_session()
 
-    Base.metadata.create_all(Session.bind)
-
-    session = Session()
+    Base.metadata.create_all(session.bind)
 
     yield session
 
     session.rollback()
     session.close()
-
-
-    Base.metadata.drop_all(Session.bind)
-
+    Base.metadata.drop_all(session.bind)
 
 # Fixture para crear un usuario de prueba
 @pytest.fixture
