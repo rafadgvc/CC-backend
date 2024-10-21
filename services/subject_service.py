@@ -1,13 +1,12 @@
 from flask_jwt_extended import jwt_required
 from flask_smorest import Blueprint, abort
-from db.versions.db import create_db
+from db.versions.db import session
 from models.subject.subject import Subject
 from models.subject.subject_schema import SubjectSchema, BasicSubjectSchema, SubjectListSchema
 from utils.common_schema import PaginationSchema
 
 blp = Blueprint("Subject", __name__, url_prefix="/subject")
-Session = create_db()
-SESSION = Session()
+SESSION = session
 
 
 @blp.route('<int:id>', methods=["GET"])

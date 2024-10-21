@@ -5,14 +5,13 @@ from models.question.question_schema import QuestionListSchema, QuestionReducedS
     ImportQuestionSchema
 from models.question.question import Question
 from flask_smorest import Blueprint, abort
-from db.versions.db import create_db
+from db.versions.db import session
 from models.question_parameter.question_parameter import QuestionParameter
 from models.answer.answer import Answer
 from utils.common_schema import PaginationSchema
 
 blp = Blueprint("Question", __name__, url_prefix="/question")
-Session = create_db()
-SESSION = Session()
+SESSION = session
 
 
 

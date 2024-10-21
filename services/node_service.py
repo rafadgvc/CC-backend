@@ -2,12 +2,11 @@ from flask_jwt_extended import jwt_required
 from models.node.node import Node
 from models.node.node_schema import NodeSchema, NodeReducedSchema, NodeListSchema
 from flask_smorest import Blueprint, abort
-from db.versions.db import create_db
+from db.versions.db import session
 from models.question.question_schema import FullQuestionListSchema
 
 blp = Blueprint("Node", __name__, url_prefix="/node")
-Session = create_db()
-SESSION = Session()
+SESSION = session
 
 
 @blp.route('<int:id>', methods=["GET"])

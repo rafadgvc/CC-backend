@@ -4,13 +4,12 @@ from flask_jwt_extended import jwt_required
 from models.exam.exam import Exam
 from models.exam.exam_schema import ExamSchema, FullExamSchema, ExamListSchema, SectionSchema, CompareExamsSchema
 from flask_smorest import Blueprint, abort
-from db.versions.db import create_db
+from db.versions.db import session
 from models.question.question_schema import QuestionListSchema, QuestionExtendedListSchema
 from utils.common_schema import PaginationSchema
 
 blp = Blueprint("Exam", __name__, url_prefix="/exam")
-Session = create_db()
-SESSION = Session()
+SESSION = session
 
 
 @blp.route('<int:id>', methods=["GET"])
