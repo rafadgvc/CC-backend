@@ -19,10 +19,8 @@ url_object = URL.create(
 
 Base = declarative_base()
 
-def create_db():
-    if os.getenv("FLASK_ENV") == "testing":
-        database_url = "sqlite:///:memory:"
-    else:
+def create_db(database_url=None):
+    if not database_url:
         database_url = os.getenv("DATABASE_URL", "postgresql://root:1a2b3c4d5e!$@localhost:5432/postgres")
 
     engine = create_engine(url_object)

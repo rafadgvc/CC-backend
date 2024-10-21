@@ -30,10 +30,9 @@ def client(app):
 # Fixture para la base de datos y la sesión
 @pytest.fixture
 def db(app):
-    engine = create_engine(app.config['SQLALCHEMY_DATABASE_URI'])
-    Session = sessionmaker(bind=engine)
+    Session = create_db("sqlite:///:memory:")
 
-    Base.metadata.create_all(engine)
+    Base.metadata.create_all(Session.bind)
 
     session = Session()
 
@@ -43,7 +42,7 @@ def db(app):
     session.close()
 
 
-    Base.metadata.drop_all(engine)
+    Base.metadata.drop_all(Session.bind)
 
 
 # Fixture para crear un usuario de prueba
