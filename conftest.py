@@ -1,3 +1,4 @@
+import bcrypt
 import pytest
 from flask import Flask
 from sqlalchemy import create_engine
@@ -15,7 +16,7 @@ def app():
         "TESTING": True,
         "SQLALCHEMY_DATABASE_URI": "sqlite:///:memory:",
         "SQLALCHEMY_TRACK_MODIFICATIONS": False,
-        "JWT_SECRET_KEY": "dont-look-at-me-this-is-a-secret!",
+        "JWT_SECRET_KEY": "EXAMPLE_KEY",
     })
 
     with flask_app.app_context():
