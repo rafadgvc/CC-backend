@@ -9,7 +9,7 @@ import os
 Base = declarative_base()
 
 def create_session():
-    # Escoge la base de datos según el entorno
+
     if os.getenv('FLASK_ENV') == 'testing':
         engine = create_engine('sqlite:///:memory:')
     else:
@@ -18,5 +18,5 @@ def create_session():
     Session = sessionmaker(bind=engine)
     return Session()
 
-# Inicializa la sesión de la base de datos
+
 session = create_session()
