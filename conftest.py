@@ -6,10 +6,12 @@ from models.user.user import User
 from db.versions.db import Base
 from app import app as flask_app
 from db.versions.db import create_db
+import os
 
 # Fixture para la aplicación Flask
 @pytest.fixture
 def app():
+    os.environ["FLASK_ENV"] = "testing"
     flask_app.config.update({
         "TESTING": True,
         "SQLALCHEMY_DATABASE_URI": "sqlite:///:memory:",
