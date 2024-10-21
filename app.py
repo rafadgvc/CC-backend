@@ -1,8 +1,11 @@
+import os
 from datetime import timedelta
 
 from flask import Flask
 from flask_jwt_extended import JWTManager
 from flask_smorest import Api
+
+from db.versions.db import create_db
 from services.user_service import blp as user_blp
 from services.exam_service import blp as exam_blp
 from services.question_service import blp as question_blp
@@ -27,6 +30,13 @@ app.config["JWT_COOKIE_CSRF_PROTECT"] = False
 app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=24)
 jwt = JWTManager(app)
 
+if os.getenv('FLASK_ENV') == 'testing':
+    app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///:memory:"
+else:
+    app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql://root:1a2b3c4d5e!$@localhost:5432/postgres"
+
+Session = create_db(app.config["SQLALCHEMY_DATABASE_URI"])
+session = Session()
 
 @app.after_request
 def add_cors_headers(response):

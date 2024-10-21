@@ -1,15 +1,17 @@
 from flask_smorest import Blueprint, abort
+
+import app
 from db.versions.db import create_db
 from models.user.user import User
 from models.user.user_schema import UserRestrictedSchema, UserLoginSchema, UserSignUpSchema, FullUserSchema, AccessTokenSchema
 from flask import jsonify
 from flask_jwt_extended import create_access_token, jwt_required, set_access_cookies, unset_jwt_cookies
 import bcrypt
+from app import session
 
 
 blp = Blueprint("User", __name__, url_prefix="/user")
-Session = create_db()
-SESSION = Session()
+SESSION = session
 
 
 @blp.route('<int:id>', methods=["GET"])
