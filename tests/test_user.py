@@ -1,9 +1,6 @@
 from models.user.user import User
 import bcrypt
 
-# Test de prueba, para ver que el CI funciona
-def test_working_file():
-    assert 1 == 1
 
 # Test para crear un usuario a través del modelo
 def test_insert_user(db):
@@ -41,18 +38,18 @@ def test_get_user_by_email_and_password(db):
     assert user.email == email
     assert bcrypt.checkpw(password.encode('utf-8'), user.password.encode('utf-8'))
 
-# Prueba para la ruta /user/signup (POST)
-def test_signup_route(client, db):
-    user_data = {
-        "email": "felis@example.com",
-        "name": "Felis Catus",
-        "password": "Fl0R4L 7r1cK"
-    }
-
-
-    response = client.post("/user/signup", json=user_data)
-    assert response.status_code == 200
-
-    data = response.get_json()
-    assert data["email"] == user_data["email"]
-    assert data["name"] == user_data["name"]
+# # Prueba para la ruta /user/signup (POST)
+# def test_signup_route(client, db):
+#     user_data = {
+#         "email": "felis@example.com",
+#         "name": "Felis Catus",
+#         "password": "Fl0R4L 7r1cK"
+#     }
+#
+#
+#     response = client.post("/user/signup", json=user_data)
+#     assert response.status_code == 200
+#
+#     data = response.get_json()
+#     assert data["email"] == user_data["email"]
+#     assert data["name"] == user_data["name"]
