@@ -85,7 +85,7 @@ def example_subject(db, example_user):
 @pytest.fixture
 def example_node(db, example_subject):
     node_data = {
-        "name": "Guerra del arma definitiva",
+        "name": "Teselia",
         "subject_id": example_subject.get("id"),
         "parent_id": example_subject.get("id")
     }

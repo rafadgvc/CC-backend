@@ -1,7 +1,7 @@
 from models.subject.subject import Subject
-from conftest import example_user, example_node, example_subject
+from conftest import db, example_user, example_subject
 
-# Test para crear una asignatura a través de la ruta POST
+# Test para crear una asignatura
 def test_add_subject(db):
     subject_data = {
         "name": "Geografía"
