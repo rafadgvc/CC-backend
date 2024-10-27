@@ -1,5 +1,5 @@
 from models.subject.subject import Subject
-from conftest import example_user, example_node, example_subject, auth_header
+from conftest import example_user, example_node, example_subject
 
 # Test para crear una asignatura a través de la ruta POST
 def test_add_subject(db):
