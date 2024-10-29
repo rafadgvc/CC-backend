@@ -104,10 +104,12 @@ class Question(Base):
             type: str,
             active: bool,
             answers: List[dict],
-            question_parameters: List[dict],
+            question_parameters=None,
             parametrized: bool = False,
 
     ) -> FullQuestionSchema:
+        if question_parameters is None:
+            question_parameters = []
         from models.answer.answer import Answer
         from models.question_parameter.question_parameter import QuestionParameter
         # The subject is checked to belong to the current user
@@ -163,7 +165,7 @@ class Question(Base):
                 points=answer_data.get('points'),
             )
 
-        if question_parameters is not []:
+        if question_parameters is not [] and not None:
             
             # The question parameters (if any) are added to the database
             for question_parameter in question_parameters.get('items'):

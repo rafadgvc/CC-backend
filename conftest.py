@@ -6,6 +6,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, clear_mappers
 
 from models.node.node import Node
+from models.question import Question
 from models.subject.subject import Subject
 from models.user.user import User
 from app import app as flask_app
@@ -96,3 +97,35 @@ def example_node(db, example_subject):
         parent_id=node_data.get('parent_id')
     )
     return node
+
+# Fixture para crear una pregunta de ejemplo
+@pytest.fixture
+def example_question(db, example_subject, example_node):
+    node_ids = []
+    node_ids.append(example_node.get("id"))
+    question_data = {
+        "title": "Explique brevemente la leyenda de los dos reyes de Teselia",
+        "subject_id": example_subject.get("id"),
+        "difficulty": 4,
+        "time": 10,
+        "parametrized": False,
+        "node_ids": node_ids,
+        "type": "desarrollo",
+        "answers": [],
+        "question_parameters": [],
+        "active": True
+    }
+    question = Question.insert_question(
+        session=db,
+        title=question_data.get('title'),
+        subject_id=question_data.get('subject_id'),
+        difficulty=question_data.get('difficulty'),
+        node_ids=question_data.get('node_ids'),
+        type=question_data.get('type'),
+        answers=question_data.get('answers'),
+        question_parameters={"items": []},
+        time=question_data.get('time'),
+        active=question_data.get('active'),
+        parametrized=question_data.get('parametrized')
+    )
+    return question
