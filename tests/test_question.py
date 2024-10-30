@@ -1,5 +1,4 @@
 from conftest import db, example_subject, example_node
-from models.node.node import Node
 from models.question import Question
 
 
@@ -40,7 +39,7 @@ def test_add_question(db, example_subject, example_node):
 
 
 # Test para obtener las preguntas de una asignatura concreta
-def test_get_subject_questions(db, example_node, example_subject, example_question):
+def test_get_subject_questions(db, example_subject, example_question):
     question = example_question
     questions = Question.get_subject_questions(
         session=db,

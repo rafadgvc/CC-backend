@@ -5,6 +5,7 @@ from flask_jwt_extended import create_access_token
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, clear_mappers
 
+from models.exam.exam import Exam
 from models.node.node import Node
 from models.question import Question
 from models.subject.subject import Subject
@@ -98,6 +99,7 @@ def example_node(db, example_subject):
     )
     return node
 
+
 # Fixture para crear una pregunta de ejemplo
 @pytest.fixture
 def example_question(db, example_subject, example_node):
@@ -129,3 +131,37 @@ def example_question(db, example_subject, example_node):
         parametrized=question_data.get('parametrized')
     )
     return question
+
+# Fixture para crear un examen de ejemplo
+@pytest.fixture
+def example_exam(db, example_subject, example_node, example_question):
+    node_ids = []
+    node_ids.append(example_node.get("id"))
+    question_data = {
+        "id": example_question.get("id"),
+        "title": "Explique brevemente la leyenda de los dos reyes de Teselia",
+        "subject_id": example_subject.get("id"),
+        "difficulty": 4,
+        "time": 10,
+        "parametrized": False,
+        "node_ids": node_ids,
+        "type": "desarrollo",
+        "answers": [],
+        "question_parameters": [],
+        "active": True,
+        "section_number": 1
+    }
+    questions=[]
+    questions.append(question_data)
+    exam_data = {
+        "title" : "Examen de repaso de Historia",
+        "questions": questions,
+        "subject_id": example_subject.get("id")
+    }
+    exam = Exam.insert_exam(
+        session=db,
+        title=exam_data.get('title'),
+        questions=exam_data.get('questions'),
+        subject_id=exam_data.get('subject_id')
+    )
+    return exam
