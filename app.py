@@ -1,7 +1,8 @@
 import os
 from datetime import timedelta
+import logging
 
-from flask import Flask
+from flask import Flask, request
 from flask_jwt_extended import JWTManager
 from flask_smorest import Api
 
@@ -13,8 +14,14 @@ from services.node_service import blp as node_blp
 from services.result_service import blp as result_blp
 from secret import JWT_SECRET_KEY
 
+logging.basicConfig(
+    filename='api.log',
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s'
+)
+
 app = Flask(__name__)
-app.config["API_TITLE"] = "QuestionsAPI"
+app.config["API_TITLE"] = "StratExam"
 app.config["API_VERSION"] = "v1"
 app.config["OPENAPI_VERSION"] = "3.0.2"
 app.config["OPENAPI_URL_PREFIX"] = "apidocs"
@@ -29,6 +36,11 @@ app.config["JWT_COOKIE_CSRF_PROTECT"] = False
 app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=24)
 jwt = JWTManager(app)
 
+
+
+@app.before_request
+def log_request_info():
+    logging.info(f"Petición {request.method} en {request.path} desde {request.remote_addr}")
 
 @app.after_request
 def add_cors_headers(response):
