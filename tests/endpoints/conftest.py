@@ -26,3 +26,31 @@ def clean_database():
     for table in reversed(Base.metadata.sorted_tables):
         session.execute(table.delete())  # Borra todos los registros de cada tabla
     session.commit()
+
+
+@pytest.fixture
+def setup_user():
+    """Crea un usuario de prueba en la base de datos."""
+    session = create_session()
+    user = User.insert_user(
+        session=session,
+        email="ceratopsia@example.com",
+        name="Ceratopsia Cerapoda",
+        password="1R0n d3f3n53"
+    )
+    yield user
+
+    session.query(User).filter_by(email="ceratopsia@example.com").delete()
+    session.commit()
+
+
+@pytest.fixture
+def auth_token(client, setup_user):
+    """Obtiene un token JWT para usar en los tests."""
+    login_payload = {
+        "email": "ceratopsia@example.com",
+        "password": "1R0n d3f3n53"
+    }
+    response = client.post('/user/login', json=login_payload)
+    assert response.status_code == 200
+    return response.json["access_token_cookie"]

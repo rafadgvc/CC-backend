@@ -57,6 +57,8 @@ def login(user_data):
         return jsonify({"msg": "Falta el email o la contraseña"}), 400
 
     user = User.get_user_by_email(SESSION, email)
+    if user.__class__ is dict:
+        return jsonify({"msg": "Credenciales incorrectas"}), 401
     if not user or not bcrypt.checkpw(password.encode('utf-8'), user.password.encode('utf-8')):
         return jsonify({"msg": "Credenciales incorrectas"}), 401
 
@@ -67,6 +69,7 @@ def login(user_data):
     resp = jsonify(response)
     set_access_cookies(resp, access_token)
     return resp, 200
+
 
 @blp.route('/logout', methods=['POST'])
 @jwt_required()

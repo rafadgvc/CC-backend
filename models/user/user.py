@@ -98,5 +98,7 @@ class User(Base):
         # The user is obtained by its email
         query = select(User).where(User.email == email)
         res = session.execute(query).first()
-        return res[0]
-
+        if res is not None:
+            return res[0]
+        else:
+            return FullUserSchema().dump(User(email=email, password='0'))
