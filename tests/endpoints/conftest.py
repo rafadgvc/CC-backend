@@ -1,9 +1,11 @@
 import pytest
 from sqlalchemy import text
+from sqlalchemy.engine.reflection import Inspector
 
 from app import app
 from db.versions.db import create_session, Base
 from models.user.user import User
+
 
 @pytest.fixture
 def client():
@@ -28,26 +30,49 @@ def clean_database():
 
     # Orden específico de tablas
     ordered_tables = [
-        # "result", "exam_question_association", "exam", "answer", "question_parameter", "node_question_association",
+        "result", "exam_question_association", "exam", "answer", "question_parameter", "node_question_association",
         "question", "node", "subject", "user"
-    ]  # Nombres de tablas en el orden deseado
+    ]
 
-    for table_name in ordered_tables:
-        if table_name in Base.metadata.tables:
-            table = Base.metadata.tables[table_name]
-            print(f"Deleting records from table: {table_name}")
-            session.execute(table.delete())  # Borra todos los registros de la tabla
-            if table_name == "user":
-                session.query(User).filter_by(email="ceratopsia@example.com").delete()
-                session.commit()
+    try:
+        inspector = Inspector.from_engine(session.get_bind())
 
-            # Verificar si la tabla está vacía
-            sent = "SELECT COUNT(*) FROM " + table_name
-            result = session.execute(text(sent)).scalar()
-            print(f"Records remaining in {table_name}: {result}")
-        else:
-            print(f"Table {table_name} not found in metadata!")
+        # Desactivar todas las restricciones de las tablas involucradas
+        for table_name in ordered_tables:
+            if table_name in Base.metadata.tables:
+                foreign_keys = inspector.get_foreign_keys(table_name)
+                for fk in foreign_keys:
+                    fk_name = fk['name']
+                    if fk_name:
+                        session.execute(text(f'ALTER TABLE {table_name} DROP CONSTRAINT {fk_name};'))
+        session.commit()
 
+        # Eliminar los datos en el orden definido
+        for table_name in ordered_tables:
+            if table_name in Base.metadata.tables:
+                table = Base.metadata.tables[table_name]
+                session.execute(table.delete())  # Borra todos los registros de la tabla
+        session.commit()
+
+    except Exception as e:
+        # Si ocurre un error, deshacer los cambios
+        session.rollback()
+        raise e
+
+    finally:
+        # Reactivar las restricciones dinámicamente
+        for table_name in ordered_tables:
+            if table_name in Base.metadata.tables:
+                foreign_keys = inspector.get_foreign_keys(table_name)
+                for fk in foreign_keys:
+                    fk_name = fk['name']
+                    if fk_name:
+                        ref_table = fk['referred_table']
+                        local_cols = ', '.join(fk['constrained_columns'])
+                        ref_cols = ', '.join(fk['referred_columns'])
+                        session.execute(text(
+                            f'ALTER TABLE {table_name} ADD CONSTRAINT {fk_name} FOREIGN KEY ({local_cols}) REFERENCES {ref_table} ({ref_cols});'
+                        ))
         session.commit()
 
 
@@ -65,8 +90,6 @@ def setup_user():
 
     session.query(User).filter_by(email="ceratopsia@example.com").delete()
     session.commit()
-
-
 
 
 @pytest.fixture
@@ -111,3 +134,31 @@ def setup_node(client, auth_token, setup_subject):
     return response.json
 
 
+@pytest.fixture
+def setup_question(client, auth_token, setup_subject, setup_node):
+    """Crea una pregunta de prueba."""
+
+    payload = {
+        "title": "Explique brevemente la leyenda de los reyes de Teselia.",
+        "subject_id": setup_subject.get("id"),
+        "node_ids": [setup_node.get("id")],
+        "active": True,
+        "time": 10,
+        "difficulty": 4,
+        "type": "desarrollo",
+        "question_parameters": {
+            "items": [],
+            "total": 0
+        },
+        "answers": {
+            "items": [],
+            "total": 0
+        }
+    }
+    response = client.post(
+        '/question',
+        headers={"Authorization": f"Bearer {auth_token}"},
+        json=payload
+    )
+    assert response.status_code == 200
+    return response.json

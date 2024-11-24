@@ -200,6 +200,9 @@ class Question(Base):
         query = select(Question).where(Question.id == id)
         res = session.execute(query).first()
 
+        if res is None:
+            abort(404, "Esta pregunta no existe o ha sido eliminada.")
+
         # The question is checked to belong to the current user
         user_id = get_current_user_id()
         if res[0].created_by != user_id:

@@ -43,9 +43,9 @@ class QuestionReducedSchema(Schema):
     time = fields.Integer()
     difficulty = fields.Integer()
     type = fields.String()
-    section_number = fields.Integer()
+    section_number = fields.Integer(nullable=True)
     question_parameters = fields.Nested(QuestionParameterListSchema, nullable=True)
-    answers = fields.Nested(AnswerAddListSchema)
+    answers = fields.Nested(AnswerAddListSchema, nullable=True)
     class Meta:
         unknown = EXCLUDE
 
