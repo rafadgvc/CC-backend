@@ -22,7 +22,10 @@ def get_node(id):
             id=id
         )
     except Exception as e:
-        abort(400, message=str(e))
+        if e.code == 404:
+            abort(404, message=str(e))
+        else:
+            abort(400, message=str(e))
 
 
 @blp.route('', methods=["POST"])
@@ -56,8 +59,8 @@ def get_subjects_nodes(id):
 
 
 @blp.route('<int:id>', methods=["PUT"])
-@blp.arguments(NodeSchema)
 @jwt_required()
+@blp.arguments(NodeSchema)
 @blp.response(204, NodeSchema)
 def edit_node(node_data, id):
     """ Edits node name

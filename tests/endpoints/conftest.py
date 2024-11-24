@@ -37,6 +37,9 @@ def clean_database():
             table = Base.metadata.tables[table_name]
             print(f"Deleting records from table: {table_name}")
             session.execute(table.delete())  # Borra todos los registros de la tabla
+            if table_name == "user":
+                session.query(User).filter_by(email="ceratopsia@example.com").delete()
+                session.commit()
 
             # Verificar si la tabla está vacía
             sent = "SELECT COUNT(*) FROM " + table_name
@@ -64,6 +67,8 @@ def setup_user():
     session.commit()
 
 
+
+
 @pytest.fixture
 def auth_token(client, setup_user):
     """Obtiene un token JWT para usar en los tests."""
@@ -82,6 +87,23 @@ def setup_subject(client, auth_token):
     payload = {"name": "Geografía"}
     response = client.post(
         '/subject',
+        headers={"Authorization": f"Bearer {auth_token}"},
+        json=payload
+    )
+    assert response.status_code == 200
+    return response.json
+
+
+@pytest.fixture
+def setup_node(client, auth_token, setup_subject):
+    """Crea un Nodo de prueba."""
+    payload = {
+        "name": "Teselia",
+        "subject_id": setup_subject.get('id'),
+        "parent_id": -1,
+    }
+    response = client.post(
+        '/node',
         headers={"Authorization": f"Bearer {auth_token}"},
         json=payload
     )

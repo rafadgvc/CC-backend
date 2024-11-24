@@ -89,17 +89,21 @@ class Node(Base):
             abort(400, "La asignatura con el ID no ha sido encontrada.")
 
         # The node is checked to have an existing parent
-        if parent_id is not None:
-            query = select(Node).where(
-                and_(
-                    Node.id == parent_id,
-                    Node.created_by == user_id
-                )
-            )
-            parent = session.execute(query).first()
+        # if parent_id is not None:
+        #     query = select(Node).where(
+        #         and_(
+        #             Node.id == parent_id,
+        #             Node.created_by == user_id
+        #         )
+        #     )
+        #     parent = session.execute(query).first()
+        #
+        #     if not parent:
+        #         abort(400, "El nodo superior con el ID no ha sido encontrado.")
 
-            if not parent:
-                abort(400, "El nodo superior con el ID no ha sido encontrado.")
+
+        if parent_id == -1:
+            parent_id = None
         
         # The node is added to the database
         new_node = Node(name=name, subject_id=subject_id, created_by=user_id, parent_id=parent_id)
@@ -118,6 +122,8 @@ class Node(Base):
 
         # The node is checked to belong to the current user
         user_id = get_current_user_id()
+        if res is None:
+            abort(404, "No existe este nodo.")
         if res[0].created_by != user_id:
             abort(401, "No tienes acceso a este recurso.")
         node = res[0]
