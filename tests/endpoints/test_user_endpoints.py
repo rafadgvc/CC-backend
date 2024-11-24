@@ -1,4 +1,6 @@
 import pytest
+
+
 def test_signup_user(client):
     """Prueba el signup."""
     payload = {
@@ -8,6 +10,7 @@ def test_signup_user(client):
     }
     response = client.post('/user/signup', json=payload)
     assert response.status_code == 200
+
 
 @pytest.mark.parametrize(
     "email, password, expected_status",
@@ -35,8 +38,6 @@ def test_logout(client, setup_user, auth_token):
         headers={"Authorization": f"Bearer {auth_token}"}
     )
     assert response.status_code == 200
-
-
 
 
 def test_signup_duplicate_user(client):

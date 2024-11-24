@@ -1,4 +1,6 @@
 import pytest
+from sqlalchemy import text
+
 from app import app
 from db.versions.db import create_session, Base
 from models.user.user import User
@@ -21,11 +23,29 @@ def setup_test_data():
 
 @pytest.fixture(autouse=True)
 def clean_database():
-    """Limpia la base de datos entre tests."""
+    """Limpia la base de datos en un orden específico."""
     session = create_session()
-    for table in reversed(Base.metadata.sorted_tables):
-        session.execute(table.delete())  # Borra todos los registros de cada tabla
-    session.commit()
+
+    # Orden específico de tablas
+    ordered_tables = [
+        # "result", "exam_question_association", "exam", "answer", "question_parameter", "node_question_association",
+        "question", "node", "subject", "user"
+    ]  # Nombres de tablas en el orden deseado
+
+    for table_name in ordered_tables:
+        if table_name in Base.metadata.tables:
+            table = Base.metadata.tables[table_name]
+            print(f"Deleting records from table: {table_name}")
+            session.execute(table.delete())  # Borra todos los registros de la tabla
+
+            # Verificar si la tabla está vacía
+            sent = "SELECT COUNT(*) FROM " + table_name
+            result = session.execute(text(sent)).scalar()
+            print(f"Records remaining in {table_name}: {result}")
+        else:
+            print(f"Table {table_name} not found in metadata!")
+
+        session.commit()
 
 
 @pytest.fixture
@@ -54,3 +74,18 @@ def auth_token(client, setup_user):
     response = client.post('/user/login', json=login_payload)
     assert response.status_code == 200
     return response.json["access_token_cookie"]
+
+
+@pytest.fixture
+def setup_subject(client, auth_token):
+    """Crea una Asignatura de prueba."""
+    payload = {"name": "Geografía"}
+    response = client.post(
+        '/subject',
+        headers={"Authorization": f"Bearer {auth_token}"},
+        json=payload
+    )
+    assert response.status_code == 200
+    return response.json
+
+
