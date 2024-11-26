@@ -2,7 +2,7 @@ import pytest
 from sqlalchemy import text
 from sqlalchemy.engine.reflection import Inspector
 
-from app import app
+from app import app as flask_app
 from db.versions.db import create_session, Base
 from models.user.user import User
 
@@ -10,8 +10,8 @@ from models.user.user import User
 @pytest.fixture
 def client():
     """Crea un cliente de pruebas para la aplicación Flask."""
-    app.config["TESTING"] = True
-    with app.test_client() as client:
+    flask_app.config["TESTING"] = True
+    with flask_app.test_client() as client:
         yield client
 
 
@@ -19,7 +19,7 @@ def client():
 def setup_test_data():
     """Prepara datos de prueba en la base de datos."""
     session = create_session()
-    user = User.insert_user(session, email="test@example.com", name="Test User", password="12345")
+    user = User.insert_user(session, email="pachycephalosaurus@example.com", name="Pachycephalosaurus Wyomingensis", password="12345")
     return user
 
 
@@ -28,7 +28,6 @@ def clean_database():
     """Limpia la base de datos en un orden específico."""
     session = create_session()
 
-    # Orden específico de tablas
     ordered_tables = [
         "result", "exam_question_association", "exam", "answer", "question_parameter", "node_question_association",
         "question", "node", "subject", "user"
@@ -37,7 +36,6 @@ def clean_database():
     try:
         inspector = Inspector.from_engine(session.get_bind())
 
-        # Desactivar todas las restricciones de las tablas involucradas
         for table_name in ordered_tables:
             if table_name in Base.metadata.tables:
                 foreign_keys = inspector.get_foreign_keys(table_name)
@@ -47,20 +45,17 @@ def clean_database():
                         session.execute(text(f'ALTER TABLE {table_name} DROP CONSTRAINT {fk_name};'))
         session.commit()
 
-        # Eliminar los datos en el orden definido
         for table_name in ordered_tables:
             if table_name in Base.metadata.tables:
                 table = Base.metadata.tables[table_name]
-                session.execute(table.delete())  # Borra todos los registros de la tabla
+                session.execute(table.delete())
         session.commit()
 
     except Exception as e:
-        # Si ocurre un error, deshacer los cambios
         session.rollback()
         raise e
 
     finally:
-        # Reactivar las restricciones dinámicamente
         for table_name in ordered_tables:
             if table_name in Base.metadata.tables:
                 foreign_keys = inspector.get_foreign_keys(table_name)
