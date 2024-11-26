@@ -24,21 +24,11 @@ def setup_test_data():
     user = User.insert_user(session, email="pachycephalosaurus@example.com", name="Pachycephalosaurus Wyomingensis", password="12345")
     return user
 
-@pytest.fixture(scope="session")
-def engine():
-    # Usa una base de datos SQLite en memoria para pruebas
-    engine = create_engine("sqlite:///:memory:")
-    Base.metadata.create_all(engine)  # Crea todas las tablas
-    yield engine
-    Base.metadata.drop_all(engine)  # Limpia después de las pruebas
-
-@pytest.fixture(scope="session")
-def session(engine):
-    """Crea una sesión de base de datos para las pruebas."""
-    Session = sessionmaker(bind=engine)
-    session = Session()
-    yield session
-    session.close()
+@pytest.fixture(scope="session", autouse=True)
+def setup_database():
+    with flask_app.app_context():
+        from sqlalchemy import create_engine
+        Base.metadata.create_all(bind=create_engine("sqlite:///:memory:"))
 
 
 @pytest.fixture(autouse=True)
