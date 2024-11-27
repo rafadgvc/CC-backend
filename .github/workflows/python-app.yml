@@ -52,11 +52,11 @@ jobs:
         pip install -r requirements.txt 
 
     - name: Set DATABASE_URL environment variable
-      run: echo "postgresql://root:1a2b3c4d5e!$@localhost:5432/test_db" >> $GITHUB_ENV
+      run: echo "DATABASE_URL=postgresql://root:1a2b3c4d5e!%40localhost:5432/test_db" >> $GITHUB_ENV
 
     - name: Run Tests
       env:
         FLASK_ENV: testing
-        DATABASE_URL: "DATABASE_URL=postgresql://root:1a2b3c4d5e!$@localhost:5432/test_db"
+        DATABASE_URL: ${{ env.DATABASE_URL }}
       run: |
         pytest --maxfail=1 --disable-warnings
