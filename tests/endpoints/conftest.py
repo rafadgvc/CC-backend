@@ -79,10 +79,6 @@ def setup_user():
     )
     session.commit()
     yield user
-
-    # Limpia el usuario al final de la sesión
-    session.query(User).filter_by(email="ceratopsia@example.com").delete()
-    session.commit()
     session.close()
 
 
