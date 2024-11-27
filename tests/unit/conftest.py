@@ -89,7 +89,7 @@ def example_node(db, example_subject):
     node_data = {
         "name": "Teselia",
         "subject_id": example_subject.get("id"),
-        "parent_id": example_subject.get("id")
+        "parent_id": -1
     }
     node = Node.insert_node(
         session=db,

@@ -2,7 +2,7 @@ from models.subject.subject import Subject
 from conftest import db, example_user, example_subject
 
 # Test para crear una asignatura
-def test_add_subject(db):
+def test_add_subject(db, example_user):
     subject_data = {
         "name": "Geografía"
     }

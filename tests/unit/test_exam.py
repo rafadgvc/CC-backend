@@ -1,7 +1,7 @@
 from models.exam.exam import Exam
 
 
-def test_add_exam(db, example_exam, example_question, example_node, example_subject):
+def test_add_exam(db, example_subject, example_node, example_question, example_exam):
     node_ids = []
     node_ids.append(example_node.get("id"))
     question_data = {
