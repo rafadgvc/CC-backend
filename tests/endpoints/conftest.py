@@ -42,19 +42,29 @@ def clean_database():
         "node_question_association", "question", "node", "subject"
     ]
 
+
     try:
+        # Desactivar restricciones de clave foránea
+        session.execute(text("SET session_replication_role = 'replica';"))
+
+        # Borrar tablas en el orden definido
         for table_name in ordered_tables:
             if table_name in Base.metadata.tables:
                 table = Base.metadata.tables[table_name]
-                session.execute(table.delete())
+                session.execute(table.delete())  # Borra todos los registros de la tabla
+
+        # Confirmar cambios
         session.commit()
 
     except Exception as e:
+        # Si ocurre un error, deshacer los cambios
         session.rollback()
         raise e
 
     finally:
-        session.close()
+        # Reactivar restricciones de clave foránea
+        session.execute(text("SET session_replication_role = 'origin';"))
+        session.commit()
 
 
 @pytest.fixture(scope="session")
