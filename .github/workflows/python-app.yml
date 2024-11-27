@@ -59,4 +59,4 @@ jobs:
         FLASK_ENV: testing
         DATABASE_URL: ${{ env.DATABASE_URL }}
       run: |
-        pytest --maxfail=1 --disable-warnings
+        pytest --maxfail=2 --disable-warnings
