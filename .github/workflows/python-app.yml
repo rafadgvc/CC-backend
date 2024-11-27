@@ -53,6 +53,6 @@ jobs:
     - name: Run Tests
       env:
         FLASK_ENV: testing
-        DATABASE_URL: ${{ env.DATABASE_URL }}
+        DATABASE_URL: "DATABASE_URL=postgresql://root:1a2b3c4d5e!$@localhost:5432/test_db"
       run: |
         pytest --maxfail=1 --disable-warnings

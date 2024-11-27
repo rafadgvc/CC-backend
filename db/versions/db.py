@@ -9,7 +9,9 @@ import os
 Base = declarative_base()
 
 def create_session():
-    db_url = os.getenv('DATABASE_URL', 'sqlite:///:memory:')
+    db_url = os.getenv('DATABASE_URL')
+    if not db_url:
+        raise RuntimeError("DATABASE_URL is not set. Ensure it is configured in your environment.")
     engine = create_engine(db_url)
     Session = sessionmaker(bind=engine)
     return Session()
