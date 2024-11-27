@@ -52,7 +52,7 @@ jobs:
         pip install -r requirements.txt 
 
     - name: Set DATABASE_URL environment variable
-      run: echo "DATABASE_URL=postgresql://root:1a2b3c4d5e!%40localhost:5432/test_db" >> $GITHUB_ENV
+      run: echo "DATABASE_URL=postgresql://root:1a2b3c4d5e%21@localhost:5432/test_db" >> $GITHUB_ENV
 
     - name: Run Tests
       env:
