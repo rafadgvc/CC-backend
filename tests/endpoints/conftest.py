@@ -34,28 +34,15 @@ def initialize_database():
 
 @pytest.fixture(autouse=True)
 def clean_database():
-    """Limpia la base de datos en un orden específico."""
+    """Limpia la base de datos eliminando los datos en el orden correcto."""
     session = create_session()
 
-
     ordered_tables = [
-        "result", "exam_question_association", "exam", "answer", "question_parameter", "node_question_association",
-        "question", "node", "subject", "user"
+        "result", "exam_question_association", "exam", "answer", "question_parameter",
+        "node_question_association", "question", "node", "subject", "user"
     ]
 
-
     try:
-        inspector = Inspector.from_engine(session.get_bind())
-
-        for table_name in ordered_tables:
-            if table_name in Base.metadata.tables:
-                foreign_keys = inspector.get_foreign_keys(table_name)
-                for fk in foreign_keys:
-                    fk_name = fk['name']
-                    if fk_name:
-                        session.execute(text(f'ALTER TABLE {table_name} DROP CONSTRAINT {fk_name};'))
-        session.commit()
-
         for table_name in ordered_tables:
             if table_name in Base.metadata.tables:
                 table = Base.metadata.tables[table_name]
@@ -67,19 +54,7 @@ def clean_database():
         raise e
 
     finally:
-        for table_name in ordered_tables:
-            if table_name in Base.metadata.tables:
-                foreign_keys = inspector.get_foreign_keys(table_name)
-                for fk in foreign_keys:
-                    fk_name = fk['name']
-                    if fk_name:
-                        ref_table = fk['referred_table']
-                        local_cols = ', '.join(fk['constrained_columns'])
-                        ref_cols = ', '.join(fk['referred_columns'])
-                        session.execute(text(
-                            f'ALTER TABLE "{table_name}" ADD CONSTRAINT {fk_name} FOREIGN KEY ({local_cols}) REFERENCES "{ref_table}" ({ref_cols});'
-                        ))
-        session.commit()
+        session.close()
 
 
 @pytest.fixture
