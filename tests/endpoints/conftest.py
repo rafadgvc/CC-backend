@@ -39,7 +39,7 @@ def clean_database():
 
     ordered_tables = [
         "result", "exam_question_association", "exam", "answer", "question_parameter",
-        "node_question_association", "question", "node", "subject", "user"
+        "node_question_association", "question", "node", "subject"
     ]
 
     try:
@@ -57,9 +57,9 @@ def clean_database():
         session.close()
 
 
-@pytest.fixture
+@pytest.fixture(scope="session")
 def setup_user():
-    """Crea un usuario de prueba en la base de datos."""
+    """Crea un usuario de prueba en la base de datos para toda la sesión."""
     session = create_session()
     user = User.insert_user(
         session=session,
@@ -67,10 +67,13 @@ def setup_user():
         name="Ceratopsia Cerapoda",
         password="1R0n d3f3n53"
     )
+    session.commit()
     yield user
 
+    # Limpia el usuario al final de la sesión
     session.query(User).filter_by(email="ceratopsia@example.com").delete()
     session.commit()
+    session.close()
 
 
 @pytest.fixture
