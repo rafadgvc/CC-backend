@@ -77,7 +77,7 @@ def clean_database():
                         local_cols = ', '.join(fk['constrained_columns'])
                         ref_cols = ', '.join(fk['referred_columns'])
                         session.execute(text(
-                            f'ALTER TABLE {table_name} ADD CONSTRAINT {fk_name} FOREIGN KEY ({local_cols}) REFERENCES {ref_table} ({ref_cols});'
+                            f'ALTER TABLE "{table_name}" ADD CONSTRAINT {fk_name} FOREIGN KEY ({local_cols}) REFERENCES "{ref_table}" ({ref_cols});'
                         ))
         session.commit()
 
