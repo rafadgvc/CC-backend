@@ -9,14 +9,10 @@ import os
 Base = declarative_base()
 
 def create_session():
-
-    if os.getenv('FLASK_ENV') == 'testing':
-        engine = create_engine('sqlite:///:memory:')
-    else:
-        engine = create_engine('postgresql://root:1a2b3c4d5e!$@localhost:5432/postgres')
-
+    db_url = os.getenv('DATABASE_URL', 'sqlite:///:memory:')
+    engine = create_engine(db_url)
     Session = sessionmaker(bind=engine)
     return Session()
 
-
 session = create_session()
+

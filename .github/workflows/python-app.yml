@@ -23,16 +23,9 @@ jobs:
       with:
         python-version: '3.12'
 
-    - name: Install Docker Compose
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y docker-compose
-
-    - name: Start PostgreSQL Container
+    - name: Set up PostgreSQL container
       env:
         PGSQL_ADMIN_PASS: 1a2b3c4d5e!$
-        PGSQL_VOLUME: ./pgsql_data
-        PGSQL_PORT_MAPPING: 5432:5432
       run: |
         docker-compose -f docker/db.docker-compose.yml up -d
         for i in {1..30}; do
@@ -45,18 +38,17 @@ jobs:
         done
         docker exec -u postgres pgsql psql -c "CREATE DATABASE test_db;" -U root
 
+    - name: Set DATABASE_URL environment variable
+      run: echo "DATABASE_URL=postgresql://root:1a2b3c4d5e!$@localhost:5432/test_db" >> $GITHUB_ENV
+
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install -r requirements.txt
+        pip install -r requirements.txt 
 
     - name: Run Tests
       env:
-        DATABASE_URL: postgres://root:1a2b3c4d5e!$@localhost:5432/test_db
+        FLASK_ENV: testing
+        DATABASE_URL: ${{ env.DATABASE_URL }}
       run: |
         pytest --maxfail=1 --disable-warnings
-
-    - name: Stop PostgreSQL Container
-      if: always()
-      run: |
-        docker-compose -f docker/db.docker-compose.yml down
