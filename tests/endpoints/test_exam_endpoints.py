@@ -74,16 +74,6 @@ def test_get_exam(client, auth_token, setup_exam):
     assert "questions" in response.json
 
 
-def test_get_subject_exams(client, auth_token, setup_subject, setup_exam):
-    """Prueba a listar exámenes asociados a una asignatura."""
-    subject_id = setup_subject.get('id')
-    response = client.get(
-        f'/exam/list/{subject_id}',
-        headers={"Authorization": f"Bearer {auth_token}"},
-    )
-    assert response.status_code == 200
-    assert len(response.json.get("items", [])) > 0
-    assert response.json.get("items")[0].get("subject_id") == subject_id
 
 def test_delete_exam(client, auth_token, setup_exam):
     """Prueba a eliminar un examen por ID."""

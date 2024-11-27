@@ -17,6 +17,7 @@ def client():
         yield client
 
 
+
 @pytest.fixture
 def setup_test_data():
     """Prepara datos de prueba en la base de datos."""
@@ -25,15 +26,23 @@ def setup_test_data():
     return user
 
 
+@pytest.fixture(scope="session", autouse=True)
+def initialize_database():
+    session = create_session()
+    Base.metadata.create_all(bind=session.get_bind())
+    session.commit()
+
 @pytest.fixture(autouse=True)
 def clean_database():
     """Limpia la base de datos en un orden específico."""
     session = create_session()
 
+
     ordered_tables = [
         "result", "exam_question_association", "exam", "answer", "question_parameter", "node_question_association",
         "question", "node", "subject", "user"
     ]
+
 
     try:
         inspector = Inspector.from_engine(session.get_bind())
