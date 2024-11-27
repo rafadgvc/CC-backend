@@ -44,6 +44,10 @@ jobs:
           sleep 2
         done
         docker exec -u postgres pgsql psql -c "CREATE DATABASE test_db;" -U root
+    
+    - name: Set DATABASE_URL environment variable
+      run: echo "postgresql://root:1a2b3c4d5e!$@localhost:5432/test_db" >> $GITHUB_ENV
+
 
     - name: Install dependencies
       run: |
