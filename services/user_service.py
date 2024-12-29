@@ -1,6 +1,5 @@
 from flask_smorest import Blueprint, abort
 
-import app
 from db.versions.db import session
 from models.user.user import User
 from models.user.user_schema import UserRestrictedSchema, UserLoginSchema, UserSignUpSchema, FullUserSchema, AccessTokenSchema
@@ -62,12 +61,12 @@ def login(user_data):
     if not user or not bcrypt.checkpw(password.encode('utf-8'), user.password.encode('utf-8')):
         return jsonify({"msg": "Credenciales incorrectas"}), 401
 
-    access_token = create_access_token(identity=user.id)
+    access_token = create_access_token(identity=str(user.id))
     response = AccessTokenSchema().dump({"access_token_cookie": access_token})
 
     # Establecer la cookie de acceso
     resp = jsonify(response)
-    set_access_cookies(resp, access_token)
+    set_access_cookies(resp, str(access_token))
     return resp, 200
 
 

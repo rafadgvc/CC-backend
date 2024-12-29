@@ -1,0 +1,45 @@
+version: '3.8'
+services:
+  pgsql:
+    image: postgres:15
+    env_file:
+      - ./db-local.env
+    build:
+      context: .
+      dockerfile: db/Dockerfile.db
+    environment:
+      POSTGRES_PASSWORD: 1a2b3c4d5e!$
+      POSTGRES_USER: root
+    ports:
+      - "5432:5432"
+
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    networks:
+      - stratexam-network
+
+  backend:
+    build:
+      context: .
+      dockerfile: ./docker/Dockerfile.backend
+    environment:
+      PORT: 5000
+      FLASK_ENV: development
+      PYTHONPATH: /backend
+      DATABASE_URL: postgresql://root:1a2b3c4d5e!$@pgsql:5432/root
+    depends_on:
+      - pgsql
+    ports:
+      - "5000:5000"
+    volumes:
+      - .:/backend
+    command: python app.py
+    networks:
+      - stratexam-network
+
+volumes:
+  pg_data:
+
+networks:
+  stratexam-network:
+    driver: bridge

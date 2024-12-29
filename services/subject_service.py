@@ -1,3 +1,4 @@
+from flask import request
 from flask_jwt_extended import jwt_required
 from flask_smorest import Blueprint, abort
 from db.versions.db import session
@@ -43,6 +44,8 @@ def get_user_subject(pagination_params):
 def add_subject(subject_data):
     """ Creates a subject
     """
+    print(request.json)
+    subject_data = BasicSubjectSchema().load(request.json)
     try:
         subject = SubjectSchema().load(subject_data)
         return Subject.insert_subject(

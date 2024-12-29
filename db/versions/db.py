@@ -9,7 +9,7 @@ import os
 Base = declarative_base()
 
 def create_session():
-    db_url = 'postgresql://root:1a2b3c4d5e!$@localhost:5432/test_db'
+    db_url = os.getenv('DATABASE_URL', 'postgresql://root:1a2b3c4d5e!$@pgsql:5432/root')
     if not db_url:
         raise RuntimeError("DATABASE_URL is not set. Ensure it is configured in your environment.")
     engine = create_engine(db_url)
