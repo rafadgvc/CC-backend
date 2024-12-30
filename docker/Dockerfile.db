@@ -1,3 +1,5 @@
+# Usar una imagen de Docker oficial de postgres
 FROM postgres:15
 
+# Copiar el archivo init.sql para establecerlo como punto de entrada de la Base de Datos
 COPY ./db/init.sql /docker-entrypoint-initdb.d/
