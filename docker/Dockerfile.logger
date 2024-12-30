@@ -1,3 +1,4 @@
+# Usar una imagen de Docker oficial de Alpine
 FROM alpine:latest
 
 # Instalar herramientas necesarias (bash y demás utilidades)
