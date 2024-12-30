@@ -1,55 +1,55 @@
 version: '3.8'
 services:
-  pgsql:
-    image: postgres:15
+  pgsql:                                                            # Servicio de la base de datos PostgreSQL
+    image: postgres:15                                              # Imagen de Docker oficial de PostgreSQL versión 15 
     env_file:
-      - ./db-local.env
+      - ./db-local.env                                              # Archivo .env para configurar las variables
     build:
-      context: .
-      dockerfile: docker/Dockerfile.db
+      context: .                                                    # Contexto del proyecto en el que se ubica la imagen
+      dockerfile: docker/Dockerfile.db                              # Ruta del Dockerfile de la Base de Datos
     environment:
-      POSTGRES_PASSWORD: 1a2b3c4d5e!$
-      POSTGRES_USER: root
+      POSTGRES_PASSWORD: 1a2b3c4d5e!$                               # Contraseña para usar la Base de Datos
+      POSTGRES_USER: root                                           # Usuario para usar la Base de Datos
     ports:
-      - "5432:5432"
+      - "5432:5432"                                                 # Mapeo del puerto 5432 para conexiones externas 
 
     volumes:
-      - pg_data:/var/lib/postgresql/data
+      - pg_data:/var/lib/postgresql/data                            # Volumen en el que almacenar los datos en la Base de Datos
     networks:
-      - stratexam-network
+      - stratexam-network                                           # Red para conectarse con otros elementos del contenedor
 
-  backend:
+  backend:                                                          # Servicio para la API 
     build:
-      context: .
-      dockerfile: ./docker/Dockerfile.backend
+      context: .                                                    # Contexto del proyecto en el que se ubica la imagen
+      dockerfile: ./docker/Dockerfile.backend                       # Ruta del Dockerfile del backend
     environment:
-      PORT: 5000
-      FLASK_ENV: development
-      PYTHONPATH: /backend
-      DATABASE_URL: postgresql://root:1a2b3c4d5e!$@pgsql:5432/root
+      PORT: 5000                                                    # Mapeo el puerto 5432 para conexiones externas 
+      FLASK_ENV: development                                        # Definición del entorno de desarrollo para Flask
+      PYTHONPATH: /backend                                          # Añade `/backend` al path de Python
+      DATABASE_URL: postgresql://root:1a2b3c4d5e!$@pgsql:5432/root  # URL de conexión a la base de datos.
     depends_on:
-      - pgsql
+      - pgsql                                                       # Dependencia del contenedor de pgsql
     ports:
-      - "5000:5000"
+      - "5000:5000"                                                 # Mapeo el puerto 5432 para conexiones externas 
     volumes:
-      - .:/backend
-      - logs:/var/log/api
+      - .:/backend                                              
+      - logs:/var/log/api                                           # Volumen de los logs
     networks:
-      - stratexam-network
+      - stratexam-network                                           # Red para conectarse con otros elementos del contenedor
 
-  log_processor:
+  log_processor:                                                    # Servicio dedicado al procesamiento de logs
     build:
-      context: .
-      dockerfile: docker/Dockerfile.logger
+      context: .                                                    # Contexto del proyecto en el que se ubica la imagen
+      dockerfile: docker/Dockerfile.logger                          # Ruta del Dockerfile del log_processor
     volumes:
-      - logs:/var/log/api
+      - logs:/var/log/api                                           # Volumen de los logs
     networks:
-      - stratexam-network
+      - stratexam-network                                           # Red para conectarse con otros elementos del contenedor
 
 volumes:
-  pg_data:
-  logs:
+  pg_data:                                                          # Volumen de la Base de Datos
+  logs:                                                             # Volumen de los logs
 
 networks:
-  stratexam-network:
-    driver: bridge
+  stratexam-network:                                                # Red para conectarse con otros elementos del contenedor
+    driver: bridge                                                  # Tipo `bridge` para la comunicación entre contenedores
