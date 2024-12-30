@@ -4,6 +4,9 @@ FROM python:3.12-slim
 # Establece el directorio de trabajo en el contenedor
 WORKDIR /backend
 
+# Crear el directorio de logs y el archivo vacío
+RUN mkdir -p /var/log/api && touch /var/log/api/api.log
+
 # Copia solo el archivo requirements.txt al contenedor
 COPY requirements.txt .
 

@@ -1,0 +1,7 @@
+FROM alpine:latest
+
+# Instalar herramientas necesarias (bash y demás utilidades)
+RUN apk add --no-cache bash
+
+# Configurar el punto de entrada
+ENTRYPOINT ["/bin/sh", "-c", "while [ ! -f /var/log/api/api.log ]; do sleep 1; done; tail -f /var/log/api/api.log"]

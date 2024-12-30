@@ -6,7 +6,7 @@ services:
       - ./db-local.env
     build:
       context: .
-      dockerfile: db/Dockerfile.db
+      dockerfile: docker/Dockerfile.db
     environment:
       POSTGRES_PASSWORD: 1a2b3c4d5e!$
       POSTGRES_USER: root
@@ -33,12 +33,22 @@ services:
       - "5000:5000"
     volumes:
       - .:/backend
-    command: python app.py
+      - logs:/var/log/api
+    networks:
+      - stratexam-network
+
+  log_processor:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.logger
+    volumes:
+      - logs:/var/log/api
     networks:
       - stratexam-network
 
 volumes:
   pg_data:
+  logs:
 
 networks:
   stratexam-network:

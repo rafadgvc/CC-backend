@@ -15,7 +15,7 @@ from services.result_service import blp as result_blp
 from secret import JWT_SECRET_KEY
 
 logging.basicConfig(
-    filename='api.log',
+    filename='/var/log/api/api.log',
     level=logging.INFO,
     format='%(asctime)s - %(levelname)s - %(message)s'
 )
